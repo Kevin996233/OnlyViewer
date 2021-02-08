@@ -11,12 +11,9 @@ import java.net.URLEncoder;
  **/
 
 public class Ocr extends GenAIP {
-    /**
-     * 三十日更新一次
-     * Latest: 2020/5/24
-     */
-    private static final String API_KEY = "bKZOcPVr8Ln9t5kBUm7mYWn1";
-    private static final String SECRET_KEY = "puXuxEdvZpV3SynEY9kptIvopWDYcBOX";
+    // 需要您自行前往百度AI -> 控制台 -> 文字识别 -> 添加应用获取API_KEY与SECRET_KEY
+    private static final String API_KEY = "";
+    private static final String SECRET_KEY = "";
 
     // 中英文模式 mode
     public static final int ENG = 0;
@@ -31,16 +28,23 @@ public class Ocr extends GenAIP {
         String newImagePath = beforeName + "_only" + afterName;
         File image = new File(newImagePath);
         String result;
-        if (image.exists()) {
-            result = OCR(newImagePath, mode);
+        if (API_KEY.length() == 0 && SECRET_KEY.length() == 0) {
+            result ="抱歉给您带来不便（＞人＜；）\n\n" +
+                    "请您自行前往百度AI -> 控制台 -> 文字识别 -> 添加应用获取API_KEY与SECRET_KEY并更新代码\n\n" +
+                    "https://ai.baidu.com/";
+                    ;
         } else {
-            result = OCR(imagePath, mode);
-        }
-        if (result == null) {
-            result = "图中无可识别文字";
-        }
-        if (result.equals("Expired")) {
-            result = "请联系作者更新Access Token!";
+            if (image.exists()) {
+                result = OCR(newImagePath, mode);
+            } else {
+                result = OCR(imagePath, mode);
+            }
+            if (result == null) {
+                result = "图中无可识别文字";
+            }
+            if (result.equals("Expired")) {
+                result = "请联系作者更新Access Token!";
+            }
         }
         return result;
     }
@@ -63,7 +67,6 @@ public class Ocr extends GenAIP {
             // 可自动检测图像朝向
             String param = "image=" + imgParam + "&detect_direction=true";
 
-            // 此获取Token方法每三十日需要更新一次
             String accessToken = getAuth(API_KEY, SECRET_KEY);
 
             if (mode == 0)
